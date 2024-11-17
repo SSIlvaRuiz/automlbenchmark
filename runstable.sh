@@ -7,32 +7,34 @@ FRAMEWORKS=(
 #randomforest
 #tunedrandomforest
 
-autosklearn
+#autosklearn
 h2oautoml
-tpot
-oboe
-autoweka
+#tpot
+#oboe
+#autoweka
 #hyperoptsklearn
 #ranger
 )
 
 BENCHMARKS=(
-#test
+validation
+#example
 #validation
-small
-medium
-large
+#small
+#medium
+#large
 )
 
 CONSTRAINTS=(
-1h8c
-4h8c
+test
+#1h8c
+#4h8c
 )
 
 MODE=(
-local
+#local
 docker
-aws
+#aws
 )
 
 mode='local'

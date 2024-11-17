@@ -44,3 +44,8 @@ def singularity_commands(*args, setup_cmd=None):
 """.format(
         cmd="{}".format(setup_cmd) if setup_cmd is not None else ""
     )
+
+
+
+#if __name__ == '__main__':
+#    run() investigar los argumentos para debugear el exe.py

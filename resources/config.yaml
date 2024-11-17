@@ -95,7 +95,7 @@ inference_time_measurements:  # configuration namespace for performing additiona
                                # E.g., on micro-mass (571 rows) with `batch_sizes` [1, 10, 100, 1000, 10000], only measure [1, 10, 100].
 
 openml:                # configuration namespace for openML.
-  apikey: c1994bdb7ecb3c6f3c8f3b35f4b47f1f
+  apikey: a262e30c0135d10c3d48576972612f89
   infer_dtypes: False
 
 versions:              # configuration namespace for versions enforcement (libraries versions are usually enforced in requirements.txt for the app and for each framework).

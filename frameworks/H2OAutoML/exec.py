@@ -9,8 +9,14 @@ import re
 from packaging import version
 import pandas as pd
 
+#Seba: modificado para que corra la wea
+from scipy.io import arff
+import pandas as pd
+#Seba_ end
+
 import h2o
 from h2o.automl import H2OAutoML
+from h2o.frame import H2OFrame
 
 from frameworks.shared.callee import FrameworkError, call_run, output_subdir, result, \
     measure_inference_times
@@ -34,7 +40,34 @@ class BackendMemoryMonitoring(Monitoring):
 
 
 def run(dataset, config):
-    log.info(f"\n**** H2O AutoML [v{h2o.__version__}] ****\n")
+    log.info(f"\n**** H2O AutoML ################################################################## [v{h2o.__version__}] ****\n")
+    #print("hola")
+    #print(dataset)
+    #X_train = dataset.train.X  # Dataframe
+    #y_train = dataset.train.y  # Dataframe
+    #X_test = dataset.test.X
+    #X_test = dataset.test.y
+
+    #Seba: 
+
+    #Train dataset
+    data_train, meta_train = arff.loadarff(dataset.train.path)
+    # Convertir a DataFrame
+    train_df = pd.DataFrame(data_train)
+    # Si hay datos categóricos, se convierten a strings
+    for column in train_df.select_dtypes(['object']):
+        train_df[column] = train_df[column].str.decode('utf-8')
+
+    #Test dataset
+    data_test, meta_test = arff.loadarff(dataset.test.path)
+    # Convertir a DataFrame
+    test_df = pd.DataFrame(data_test)
+    # Si hay datos categóricos, se convierten a strings
+    for column in test_df.select_dtypes(['object']):
+        test_df[column] = test_df[column].str.decode('utf-8')
+
+    #Seba_end
+
     # Mapping of benchmark metrics to H2O metrics
     metrics_mapping = dict(
         acc='mean_per_class_error',
@@ -78,17 +111,27 @@ def run(dataset, config):
         train = None
         if version.parse(h2o.__version__) >= version.parse("3.32.1"):  # previous versions may fail to parse correctly some rare arff files using single quotes as enum/string delimiters (pandas also fails on same datasets)
             import_kwargs['quotechar'] = '"'
-            train = h2o.import_file(dataset.train.path, destination_frame=frame_name('train', config), **import_kwargs)
+            
+            #Seba_
+            train = H2OFrame(train_df)
+            #Seba_end
+            #train = h2o.import_file(dataset.train.path, destination_frame=frame_name('train', config), **import_kwargs)
             if train.nlevels() != dataset.domains.cardinalities:
                 h2o.remove(train)
                 train = None
                 import_kwargs['quotechar'] = "'"
 
         if not train:
-            train = h2o.import_file(dataset.train.path, destination_frame=frame_name('train', config), **import_kwargs)
+            #Seba_
+            train = H2OFrame(train_df)
+            #Seba_end
+            #train = h2o.import_file(dataset.train.path, destination_frame=frame_name('train', config), **import_kwargs)
             # train.impute(method='mean')
         log.debug("Loading test data from %s.", dataset.test.path)
-        test = h2o.import_file(dataset.test.path, destination_frame=frame_name('test', config), **import_kwargs)
+        #Seba_
+        test = H2OFrame(test_df)
+        #Seba_end
+        #test = h2o.import_file(dataset.test.path, destination_frame=frame_name('test', config), **import_kwargs)
         # test.impute(method='mean')
 
         if config.type == 'classification' and dataset.format == 'csv':
